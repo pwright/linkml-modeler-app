@@ -40,6 +40,7 @@ import { useAppStore } from '../store/index.js';
 import { usePlatform } from '../platform/PlatformContext.js';
 import { collectReferencedImportedEntities } from '../io/importResolver.js';
 import { buildManifestData, writeEditorManifest } from '../io/editorManifest.js';
+import { encodeLayout } from '../io/layoutCodec.js';
 import { selectEffectiveLayout } from './layoutUtils.js';
 import type { CanvasLayout, TextLabel } from '../model/index.js';
 import { emptyClassDefinition, emptyEnumDefinition } from '../model/index.js';
@@ -539,14 +540,26 @@ function SchemaCanvasInner() {
     // If node not found yet (e.g., schema is still switching), keep request pending
   }, [focusNodeRequest, storeNodes, fitView, requestFocusNode]);
 
-  // Debounced manifest write — stable callback, reads latest values via ref
+  // Debounced manifest write — stable callback, reads latest values via ref.
+  // For URL-loaded projects (no rootPath), updates the browser URL with encoded layout instead.
   const scheduleManifestWrite = useCallback(() => {
     if (manifestTimerRef.current) clearTimeout(manifestTimerRef.current);
     manifestTimerRef.current = setTimeout(() => {
       const { activeProject, activeSchemaId, hiddenSchemaIds, platform, views, activeViewId, subsetLayouts } = manifestWriteStateRef.current;
-      if (!activeProject?.rootPath) return;
-      const manifest = buildManifestData(activeProject, activeSchemaId, localLayoutRef.current, hiddenSchemaIds, views, activeViewId, subsetLayouts);
-      writeEditorManifest(platform, activeProject.rootPath, manifest);
+      if (!activeProject) return;
+
+      if (activeProject.rootPath) {
+        const manifest = buildManifestData(activeProject, activeSchemaId, localLayoutRef.current, hiddenSchemaIds, views, activeViewId, subsetLayouts);
+        writeEditorManifest(platform, activeProject.rootPath, manifest);
+      } else if (typeof window !== 'undefined') {
+        const layout = localLayoutRef.current;
+        if (Object.keys(layout.nodes).length === 0) return;
+        encodeLayout(layout).then((encoded) => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('layout', encoded);
+          window.history.replaceState(null, '', url.toString());
+        }).catch(() => {});
+      }
     }, 1000);
   }, []);
 

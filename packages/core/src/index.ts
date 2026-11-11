@@ -29,5 +29,6 @@ export * from './editor/index.js';
 export * from './validation/index.js';
 export { getRecentProjects, addRecentProject, removeRecentProject, clearRecentProjects } from './project/recentProjects.js';
 export { openProjectFromDirectory, createNewProject, loadDemoSchemaFromUrl, openSchemaFromUrl, looksLikeLinkMLSchema } from './project/projectLoader.js';
+export { encodeLayout, decodeLayout } from './io/layoutCodec.js';
 export { GitHubAuth } from './auth/GitHubAuth.js';
 export type { GitHubSession, DeviceFlowHandle } from './auth/GitHubAuth.js';

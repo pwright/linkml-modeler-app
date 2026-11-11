@@ -3,7 +3,7 @@ name: Deploy Docs + App
 on:
   push:
     branches:
-      - main
+      - ng
     paths:
       - 'packages/docs/**'
       - 'packages/web/**'

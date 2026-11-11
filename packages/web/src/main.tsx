@@ -60,6 +60,7 @@ import {
   createNewProject,
   loadDemoSchemaFromUrl,
   openSchemaFromUrl,
+  decodeLayout,
   openProjectFromDirectory,
   emptyCanvasLayout,
   type SchemaFile,
@@ -479,7 +480,13 @@ function App() {
     if (!loadUrl) return;
     urlLoadAttempted.current = true;
 
-    openSchemaFromUrl(loadUrl, platform).then(
+    const layoutParam = params.get('layout');
+    const loadWithLayout = async () => {
+      const layout = layoutParam ? await decodeLayout(layoutParam) : undefined;
+      return openSchemaFromUrl(loadUrl, platform, layout ?? undefined);
+    };
+
+    loadWithLayout().then(
       (project) => setProject(project),
       (err) => pushToast({
         message: `Failed to load schema from URL: ${err instanceof Error ? err.message : String(err)}`,

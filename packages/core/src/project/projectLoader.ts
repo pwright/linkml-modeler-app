@@ -1,7 +1,7 @@
 // Project loader — scans a directory for LinkML schemas and builds a Project object.
 
 import type { PlatformAPI } from '../platform/PlatformContext.js';
-import type { Project, SchemaFile } from '../model/index.js';
+import type { Project, SchemaFile, CanvasLayout } from '../model/index.js';
 import { emptyCanvasLayout, emptySchema } from '../model/index.js';
 import { parseYaml } from '../io/yaml.js';
 import { resolveImports } from '../io/importResolver.js';
@@ -188,7 +188,7 @@ export async function loadDemoSchemaFromUrl(url: string, name: string): Promise<
  * Throws a user-friendly Error on CORS/network failures, non-schema content,
  * or YAML parse errors.
  */
-export async function openSchemaFromUrl(url: string, platform: PlatformAPI): Promise<Project> {
+export async function openSchemaFromUrl(url: string, platform: PlatformAPI, initialLayout?: CanvasLayout): Promise<Project> {
   let content: string;
   try {
     const response = await fetch(url);
@@ -233,7 +233,7 @@ export async function openSchemaFromUrl(url: string, platform: PlatformAPI): Pro
     filePath: filename,
     schema,
     isDirty: true,     // marks as unsaved so Save → prompts for local folder
-    canvasLayout: emptyCanvasLayout(),
+    canvasLayout: initialLayout ?? emptyCanvasLayout(),
     isReadOnly: false,
     sourceUrl: url,
   };
