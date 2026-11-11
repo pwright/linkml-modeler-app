@@ -30,8 +30,14 @@ export function OpenSchemaFromUrlDialog({ onClose }: OpenSchemaFromUrlDialogProp
     setLoading(true);
     setError('');
     try {
-      const project = await openSchemaFromUrl(url.trim(), platform);
+      const trimmedUrl = url.trim();
+      const project = await openSchemaFromUrl(trimmedUrl, platform);
       setProject(project);
+      if (typeof window !== 'undefined' && window.history?.replaceState) {
+        const current = new URL(window.location.href);
+        current.searchParams.set('load', trimmedUrl);
+        window.history.replaceState({}, '', current.toString());
+      }
       pushToast({
         message: `Opened "${project.name}" — use Save to write to a local folder`,
         severity: 'success',

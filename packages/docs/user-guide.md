@@ -131,6 +131,24 @@ Use focus modes when working on large schemas to reduce visual clutter.
 
 Use the **Project Panel** or the platform file dialog (varies by browser/desktop) to open an existing `.yaml` or `.yml` LinkML schema file.
 
+### Open from URL
+
+You can open a schema hosted on the web in two ways:
+
+- **Menu:** File → Open from URL, paste the URL, and click **Open**.
+- **Query parameter:** Append `?load=<url>` to the app URL, e.g.:
+  ```
+  https://your-instance/app/?load=https://raw.githubusercontent.com/org/repo/main/schema.yaml
+  ```
+
+The URL is kept in the browser address bar, so the resulting link is bookmarkable and shareable. Refreshing the page re-fetches the schema from the source.
+
+Relative `imports:` in the schema are resolved from the URL, so multi-file schemas work as long as the imports are co-located on the same server.
+
+::: tip
+Raw GitHub URLs (`raw.githubusercontent.com`) work well since they serve permissive CORS headers. Other servers must send `Access-Control-Allow-Origin` headers or the browser will block the fetch.
+:::
+
 ### Export (save your work)
 
 - Click **⚙ Schema Settings → Export** (or use the keyboard shortcut shown in the status bar).

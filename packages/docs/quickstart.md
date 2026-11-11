@@ -202,8 +202,11 @@ The YAML Preview and the canvas should match what you left — confirming that t
 
 ## Sample Schemas
 
-Download these sample schemas to explore specific LinkML features in the editor. To use them:
+Download these sample schemas to explore specific LinkML features in the editor.
 
+**Option A — Open from URL:** Use File → Open from URL and paste the raw URL, or append `?load=<raw-url>` to the app URL.
+
+**Option B — Open locally:**
 1. Download the file(s) to a local folder.
 2. On the app splash page, click **Open Local Folder** and select that folder.
 

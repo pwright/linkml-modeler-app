@@ -59,6 +59,7 @@ import {
   CommandPalette,
   createNewProject,
   loadDemoSchemaFromUrl,
+  openSchemaFromUrl,
   openProjectFromDirectory,
   emptyCanvasLayout,
   type SchemaFile,
@@ -468,6 +469,24 @@ function App() {
     window.addEventListener('keydown', handlePaletteShortcut);
     return () => window.removeEventListener('keydown', handlePaletteShortcut);
   }, []);
+
+  // ── ?load=<url> query parameter — auto-open schema from URL on mount ──────
+  const urlLoadAttempted = React.useRef(false);
+  React.useEffect(() => {
+    if (urlLoadAttempted.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const loadUrl = params.get('load');
+    if (!loadUrl) return;
+    urlLoadAttempted.current = true;
+
+    openSchemaFromUrl(loadUrl, platform).then(
+      (project) => setProject(project),
+      (err) => pushToast({
+        message: `Failed to load schema from URL: ${err instanceof Error ? err.message : String(err)}`,
+        severity: 'error',
+      }),
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Show splash page when no project is loaded
   if (!activeProject) {
